@@ -1,0 +1,15 @@
+- name: Ensure Proxmox VM's are created and started
+  hosts: localhost
+  gather_facts: false
+
+  roles:
+    - proxmox
+
+- name: Ensure VM's are configured
+  hosts: docker
+  become: true
+
+  roles:
+    - system
+    - docker
+    # - cloudflare

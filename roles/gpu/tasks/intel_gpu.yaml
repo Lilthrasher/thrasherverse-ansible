@@ -1,0 +1,26 @@
+- name: Add Intel's official GPG key
+  apt_key:
+    url: https://repositories.intel.com/gpu/intel-graphics.key
+    state: present
+
+- name: Add Intel repository
+  apt_repository:
+    repo: deb https://repositories.intel.com/gpu/ubuntu {{ ansible_lsb.codename }} client
+    state: present
+
+- name: Update packages
+  apt:
+    update_cache: true
+    upgrade: true
+
+- name: Install Intel packages
+  package:
+    name:
+      - linux-oem-22.04
+      - mesa-vulkan-drivers
+      - libva-dev
+      - intel-opencl-icd
+      - libze1
+      - intel-level-zero-gpu
+      - intel-gpu-tools
+    state: latest

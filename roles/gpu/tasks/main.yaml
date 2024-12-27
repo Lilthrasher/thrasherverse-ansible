@@ -1,0 +1,1 @@
+- include_tasks: intel_gpu.yaml

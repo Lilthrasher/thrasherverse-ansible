@@ -1,0 +1,41 @@
+- name: Suppress login message
+  file:
+    path: /home/{{ username }}/.hushlogin
+    mode: 0644
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    modification_time: preserve
+    access_time: preserve
+    state: touch
+
+- name: Update MOTD
+  copy:
+    dest: /etc/profile.d/99-neofetch.sh
+    content: |
+      clear
+      neofetch
+    mode: 0644
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: chmod MOTD
+  shell: |
+    sudo chmod +x /etc/profile.d/99-neofetch.sh
+
+- name: Install starship
+  shell: |
+    curl -fsSL https://starship.rs/install.sh | sh -s -- --yes
+  args:
+    creates: /usr/local/bin/starship
+
+- name: Update .bashrc
+  lineinfile:
+    path: /home/{{ username }}/.bashrc
+    line: 'eval "$(starship init bash)"'
+    create: yes
+    insertafter: EOF
+
+- name: Copy Starship config
+  get_url:
+    url: https://raw.githubusercontent.com/Lilthrasher/dotfiles/refs/heads/main/starship.toml
+    dest: /home/{{ username }}/.config/

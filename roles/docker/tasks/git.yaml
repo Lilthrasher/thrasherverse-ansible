@@ -1,0 +1,67 @@
+- name: Install Docker packages
+  package:
+    name:
+      - git
+    state: latest 
+
+- name: Copy SSH private key
+  copy:
+    src: /home/kyle/.ssh/github
+    dest: /home/{{ username }}/.ssh/github
+    mode: 0600
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  ignore_errors: true
+
+- name: Create SSH config if it doesn't exist
+  file:
+    path: /home/{{ username }}/.ssh/config
+    mode: 0755
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    state: touch
+
+- name: Configure Github SSH
+  blockinfile:
+    path: /home/{{ username }}/.ssh/config
+    block: |
+      Host github.com
+        Identityfile /home/{{ username }}/.ssh/github
+        ForwardAgent yes
+    insertafter: EOF
+
+- name: Ensure GitHub is in the known_hosts file
+  known_hosts:
+    name: github.com
+    key: "{{ git_public_ssh_key }}"
+    path: /home/{{ username }}/.ssh/known_hosts
+  become: false
+
+- name: Set Git user name
+  git_config:
+    name: user.name
+    value: "{{ git_username }}"
+    scope: global
+    state: present
+  become: false
+
+- name: Set Git user email
+  git_config:
+    name: user.email
+    value: "{{ git_email }}"
+    scope: global
+  become: false
+
+- name: Set default editor
+  git_config:
+    name: core.editor
+    value: nano
+    scope: global
+  become: false
+
+- name: Set default branch name for new repositories
+  git_config:
+    name: init.defaultBranch
+    value: main
+    scope: global
+  become: false

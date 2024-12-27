@@ -1,0 +1,52 @@
+- name: Ensure Proxmoxer is installed
+  pip:
+    name: 
+    - proxmoxer
+    - requests
+
+- name: Clone VM on Proxmox Server
+  proxmox_kvm:
+    api_host: "{{ proxmox_api_host }}"
+    api_token_id: "{{ proxmox_api_token_id }}"
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    api_user: "{{ proxmox_api_user }}"
+    clone: "ansible.deora" # This is required even though it isn't used
+    vmid: 9000
+    newid: 1000
+    name: "ansible.deora"
+    node: "hapve2"
+    storage: "sweeper-shared"
+    timeout: 300
+
+- name: Update VM cloudinit config
+  proxmox_kvm:
+    api_host: "{{ proxmox_api_host }}"
+    api_token_id: "{{ proxmox_api_token_id }}"
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    api_user: "{{ proxmox_api_user }}"
+    node: "hapve2"
+    name: "ansible.deora"
+    ciuser: "{{ username }}"
+    cipassword: "{{ vm_password }}"
+    sshkeys: "{{ vm_ssh_key }}"
+    ipconfig:
+      ipconfig0: "ip=10.27.1.28/24,gw=10.27.1.1"
+    update: true
+
+- name: Start cloned VM
+  proxmox_kvm:
+    api_host: "{{ proxmox_api_host }}"
+    api_token_id: "{{ proxmox_api_token_id }}"
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    api_user: "{{ proxmox_api_user }}"
+    node: "hapve2"
+    vmid: 1000
+    state: started
+
+- name: Wait for VM to become available
+  wait_for:
+    host: 10.27.1.28
+    port: 22
+    search_regex: OpenSSH
+    timeout: 300
+  connection: local

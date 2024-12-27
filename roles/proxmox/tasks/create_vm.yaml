@@ -1,0 +1,80 @@
+- name: Ensure Proxmoxer is installed
+  pip:
+    name: 
+    - proxmoxer
+    - requests
+
+- name: Create VM on Proxmox Server
+  proxmox_kvm:
+    api_host: "{{ proxmox_api_host }}"
+    api_token_id: "{{ proxmox_api_token_id }}"
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    api_user: "{{ proxmox_api_user }}"
+    name: ansible.deora
+    node: hapve2
+    vmid: 1000
+    ciuser: "{{ username }}"
+    cipassword: "{{ vm_password }}"
+    sshkeys: "{{ vm_ssh_key }}"
+    agent: true
+    machine: q35
+    bios: ovmf
+    efidisk0:
+      storage: sweeper-shared
+      format: qcow2
+      efitype: 4m
+      pre_enrolled_keys: 1
+    boot: order=scsi0
+    cpu: host
+    cores: 4
+    memory: 6144
+    ide:
+      ide2: "sweeper-shared:cloudinit,format=qcow2"
+    scsihw: virtio-scsi-single
+    net:
+      net0: "virtio,bridge=vmbr0"
+    ipconfig:
+      ipconfig0: "ip=10.27.1.28/24,gw=10.27.1.1"
+
+- name: Create cloud image disk # This shit doesn't work, when it tries to import the cloud image it thinks it's an ISO and I can't use absolute paths.
+  community.general.proxmox_disk:
+    api_host: "{{ proxmox_api_host }}"
+    api_token_id: "{{ proxmox_api_token_id }}"
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    api_user: "{{ proxmox_api_user }}"
+    vmid: 1000
+    disk: scsi0
+    media: disk
+    format: qcow2
+    storage: local
+    discard: on
+    import_from: local:iso/noble-server-cloudimg-amd64.img
+
+- name: Grow disk
+  community.general.proxmox_disk:
+    api_host: "{{ proxmox_api_host }}"
+    api_token_id: "{{ proxmox_api_token_id }}"
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    api_user: "{{ proxmox_api_user }}"
+    vmid: 1000
+    disk: scsi0
+    size: +32G
+    state: resized
+
+- name: Start created VM
+  proxmox_kvm:
+    api_host: "{{ proxmox_api_host }}"
+    api_token_id: "{{ proxmox_api_token_id }}"
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    api_user: "{{ proxmox_api_user }}"
+    node: "hapve2"
+    vmid: 1000
+    state: started
+
+- name: Wait for VM to become available
+  wait_for:
+    host: 10.27.1.28
+    port: 22
+    search_regex: OpenSSH
+    timeout: 300
+  connection: local

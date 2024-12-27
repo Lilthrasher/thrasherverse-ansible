@@ -1,0 +1,23 @@
+- name: Install NFS packages
+  package:
+    name:
+      - nfs-common
+    state: latest
+
+- name: Create directories
+  file:
+    path: /mnt/plex
+    state: directory
+    mode: 0755
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: Modify fstab
+  blockinfile:
+    path: /etc/fstab
+    block: |
+      10.27.1.100:/mnt/sweeper/plex /mnt/plex nfs defaults  0 0
+    insertafter: EOF
+
+- name: Ensure NFS shares are mounted
+  command: mount -a

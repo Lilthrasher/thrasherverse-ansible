@@ -1,0 +1,18 @@
+- name: Update packages
+  apt:
+    update_cache: yes
+    upgrade: yes
+
+- name: Install NUT packages
+  package:
+    name:
+      - nut
+      - nut-client
+    state: latest
+
+- name: Modify upsmon.conf
+  blockinfile:
+    path: /etc/nut/upsmon.conf
+    block: |
+      MONITOR ups@10.27.1.100 1 upsmon {{ nut_password }} secondary
+    insertafter: EOF

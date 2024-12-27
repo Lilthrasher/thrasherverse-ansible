@@ -1,0 +1,2 @@
+[docker]
+deora.test ansible_host=10.27.1.28 ansible_user=vert ansible_connection=ssh ansible_ssh_private_key_file=/home/kyle/.ssh/id_rsa

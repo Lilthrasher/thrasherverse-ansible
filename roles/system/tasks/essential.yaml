@@ -1,0 +1,32 @@
+- name: Create groups
+  group:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ new_groups }}"
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  loop: "{{ new_directories }}"
+
+- name: Enable passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: "^%wheel"
+    line: "{{ username }} ALL=(ALL) NOPASSWD: ALL"
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Update packages
+  apt:
+    update_cache: yes
+    upgrade: yes
+    lock_timeout: 300
+
+- name: Install packages
+  package:
+    name: "{{ packages }}"
+    state: latest

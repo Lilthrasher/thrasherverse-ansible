@@ -1,0 +1,37 @@
+- name: Update packages
+  apt:
+    update_cache: yes
+    upgrade: yes
+
+- name: Install samba
+  package:
+    name:
+      - samba
+    state: latest
+
+- name: Ensure Samba group is created
+  group:
+    name: samba
+    state: present
+
+- name: Restart smbd and update firewall
+  shell: |
+    sudo service smbd restart && \
+    sudo ufw allow samba
+
+- name: Set Samba password for {{ username }}
+  expect:
+    command: smbpasswd -a {{ username }}
+    responses:
+      "New SMB password:": "{{ samba_password }}"
+      "Retype new SMB password:": "{{ samba_password }}"
+
+- name: Modify smb.conf
+  blockinfile:
+    path: /etc/samba/smb.conf
+    block: |
+      [docker-files]
+        path = /home/{{ username }}/docker-files
+        read only = no
+        browsable = yes
+    insertafter: EOF
