@@ -4,4 +4,4 @@ new_directories:
   - /home/{{ username }}/.config
 packages:
   - btop
-  - fastfetch
+  - neofetch
