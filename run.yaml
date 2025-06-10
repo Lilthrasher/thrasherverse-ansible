@@ -1,12 +1,5 @@
-- name: Ensure Proxmox VM's are created and started
-  hosts: localhost
-  gather_facts: false
-
-  roles:
-    - proxmox
-
-- name: Ensure VM's are configured
-  hosts: docker
+- name: Ensure Swarm VM's are configured
+  hosts: docker-swarm
   become: true
 
   roles:

@@ -39,23 +39,3 @@
     mode: 0755
     owner: "{{ username }}"
     group: "{{ username }}"
-
-- name: Clone Docker repo
-  git:
-    repo: git@github.com:Lilthrasher/docker-ha.git
-    dest: /home/{{ username }}/docker-files
-    version: main
-  become: false
-    
-- name: Find compose files
-  find:
-    paths: /home/{{ username }}/docker-files
-    patterns: docker-compose.yaml
-    recurse: true
-  register: compose_files
-
-- name: Start docker containers
-  community.docker.docker_compose_v2:
-    project_src: /home/{{ username }}/docker-files/portainer
-    state: present
-  # loop: "{{ compose.files.files }}"
