@@ -35,7 +35,12 @@
     create: yes
     insertafter: EOF
 
-- name: Copy Starship config
-  get_url:
-    url: https://raw.githubusercontent.com/Lilthrasher/dotfiles/refs/heads/main/starship.toml
-    dest: /home/{{ username }}/.config/
+- name: Download starship.toml with wget
+  ansible.builtin.command: >
+    wget -q -O /home/{{ username }}/.config/starship.toml
+    https://raw.githubusercontent.com/Lilthrasher/dotfiles/refs/heads/main/starship.toml
+
+# - name: Copy Starship config
+#   get_url:
+#     url: https://raw.githubusercontent.com/Lilthrasher/dotfiles/refs/heads/main/starship.toml
+#     dest: /home/{{ username }}/.config/
