@@ -1,3 +1,13 @@
+- name: Ensure Docker VM is configured
+  hosts: docker
+  become: true
+
+  roles:
+    - system
+    - docker
+    - gpu
+    - plex
+
 - name: Ensure Swarm VM's are configured
   hosts: docker-swarm
   become: true
