@@ -1,5 +1,4 @@
-- name: Initialize Swarm on deora-1
-  hosts: deora-1
+- name: Initialize Docker Swarm
   become: true
   tasks:
     - name: Initialize Docker Swarm
@@ -17,32 +16,19 @@
         swarm_join_cmd: "docker swarm join --token {{ swarm_token.stdout }} {{ ansible_host }}:2377"
       when: swarm_token is defined
 
-- name: Join deora-2 to Swarm
-  hosts: deora-2
-  become: true
-  vars:
-    manager_join_command: "{{ hostvars['deora-1'].swarm_join_cmd }}"
-  tasks:
-    - name: Join the worker node to the swarm
-      shell: "{{ manager_join_command }}"
-      when: manager_join_command is defined
-
 - name: Start Portainer Swarm agent
-  hosts: deora-1
-  become: true
-  tasks:
-    shell: |
-      docker network create \
-      --driver overlay \
-        portainer_agent_network
+  shell: |
+    docker network create \
+    --driver overlay \
+      portainer_agent_network
 
-      docker service create \
-        --name portainer_agent \
-        --network portainer_agent_network \
-        -p 9001:9001/tcp \
-        --mode global \
-        --constraint 'node.platform.os == linux' \
-        --mount type=bind,src=//var/run/docker.sock,dst=/var/run/docker.sock \
-        --mount type=bind,src=//var/lib/docker/volumes,dst=/var/lib/docker/volumes \
-        --mount type=bind,src=//,dst=/host \
-        portainer/agent:2.27.6
+    docker service create \
+      --name portainer_agent \
+      --network portainer_agent_network \
+      -p 9001:9001/tcp \
+      --mode global \
+      --constraint 'node.platform.os == linux' \
+      --mount type=bind,src=//var/run/docker.sock,dst=/var/run/docker.sock \
+      --mount type=bind,src=//var/lib/docker/volumes,dst=/var/lib/docker/volumes \
+      --mount type=bind,src=//,dst=/host \
+      portainer/agent:2.27.6

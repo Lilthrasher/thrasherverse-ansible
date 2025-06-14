@@ -23,10 +23,18 @@
     - gpu
     - plex
 
-- name: Ensure Deora hosts have Portainer Swarm agent configured
+- name: Ensure Deora-1 host has Docker Swarm configured
   hosts: deora-1
   become: true
 
   tasks:
     - name: Configure Portainer Swarm agent
       include_tasks: ./roles/docker/tasks/docker-swarm-init.yaml
+
+- name: Ensure Deora-2 host has Docker Swarm configured
+  hosts: deora-2
+  become: true
+
+  tasks:
+    - name: Configure Portainer Swarm agent
+      include_tasks: ./roles/docker/tasks/docker-swarm-join.yaml
