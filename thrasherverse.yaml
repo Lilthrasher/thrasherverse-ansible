@@ -28,10 +28,10 @@
   become: true
 
   roles:
-    - cephfs
+    - docker-swarm
 
 - name: Ensure Reverb has Portainer agent configured
-  hosts: Reverb
+  hosts: reverb
   become: true
 
   tasks:
@@ -44,7 +44,7 @@
 
   tasks:
     - name: Configure Portainer Swarm agent
-      include_tasks: ./roles/docker/tasks/docker-swarm-init.yaml
+      include_tasks: ./roles/docker-swarm/tasks/docker-swarm-init.yaml
 
 - name: Ensure Deora-2 has Docker Swarm configured
   hosts: deora-2
@@ -52,4 +52,4 @@
 
   tasks:
     - name: Configure Portainer Swarm agent
-      include_tasks: ./roles/docker/tasks/docker-swarm-join.yaml
+      include_tasks: ./roles/docker-swarm/tasks/docker-swarm-join.yaml
