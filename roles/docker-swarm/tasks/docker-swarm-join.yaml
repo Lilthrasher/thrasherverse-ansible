@@ -4,7 +4,7 @@
 
 - name: Echo keepalived config
   shell: |
-    vrrp_instance VI_1 {
+    echo "    vrrp_instance VI_1 {
       state BACKUP
       interface eth0
       virtual_router_id 50
@@ -17,7 +17,7 @@
         virtual_ipaddress {
           10.27.1.65
         }
-      }
+      }" > /etc/keepalived/keepalived.conf
 
 - name: Enable and start keepalived
   systemd:
