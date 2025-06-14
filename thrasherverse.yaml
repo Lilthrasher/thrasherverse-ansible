@@ -1,17 +1,15 @@
-- name: Ensure Docker VM is configured
+- name: Ensure VM's are configured
+  hosts: all
+  become: true
+
+  roles:
+    - system
+    - docker
+
+- name: Ensure Reverb has gpu and plex mounts configured
   hosts: docker
   become: true
 
   roles:
-    - system
-    - docker
     - gpu
     - plex
-
-- name: Ensure Swarm VM's are configured
-  hosts: docker-swarm
-  become: true
-
-  roles:
-    - system
-    - docker
