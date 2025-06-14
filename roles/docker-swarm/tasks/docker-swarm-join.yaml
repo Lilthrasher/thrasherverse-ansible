@@ -1,3 +1,26 @@
 - name: Docker Swarm join
   shell: "{{ hostvars['deora-1']['swarm_join_cmd'] }}"
   when: hostvars['deora-1']['swarm_join_cmd'] is defined
+
+- name: Echo keepalived config
+  shell: |
+    vrrp_instance VI_1 {
+      state BACKUP
+      interface eth0
+      virtual_router_id 50
+      priority 50
+      advert_int 1
+      authentication {
+        auth_type PASS
+        auth_pass secretpass
+      }
+        virtual_ipaddress {
+          10.27.1.65
+        }
+      }
+
+- name: Enable and start keepalived
+  systemd:
+    name: keepalived
+    enabled: true
+    state: started
