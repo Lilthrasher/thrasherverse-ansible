@@ -24,7 +24,7 @@
     - plex
 
 - name: Ensure Reverb host has Portainer agent configured
-  hosts: docker
+  hosts: reverb
   become: true
 
   tasks:
@@ -32,7 +32,7 @@
       include_tasks: ./roles/docker/tasks/portainer-agent.yaml
 
 - name: Ensure Deora hosts have Portainer Swarm agent configured
-  hosts: docker-swarm
+  hosts: deora-1
   become: true
 
   tasks:
