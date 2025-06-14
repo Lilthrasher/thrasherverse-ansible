@@ -46,4 +46,4 @@
   become: true
   tasks:
     - name: Configure Portainer Swarm agent
-      include_tasks: ./swarm-worker-ini.yaml
+      include_tasks: ./swarm-worker-init.yaml
