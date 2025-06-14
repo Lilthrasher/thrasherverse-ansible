@@ -1,5 +1,3 @@
 - name: Docker Swarm join
-  become: true
-  tasks:
-    shell: "{{ hostvars['deora-1'].swarm_join_cmd }}"
+  shell: "{{ hostvars['deora-1'].swarm_join_cmd }}"
   when: swarm_join_cmd is defined

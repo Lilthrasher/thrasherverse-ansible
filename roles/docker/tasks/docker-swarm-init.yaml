@@ -1,20 +1,17 @@
 - name: Initialize Docker Swarm
-  become: true
-  tasks:
-    - name: Initialize Docker Swarm
-      shell: docker swarm init --advertise-addr {{ ansible_host }}
-      register: swarm_init_result
-      failed_when: "'This node is already part of a swarm' not in swarm_init_result.stderr and swarm_init_result.rc != 0"
+  shell: "docker swarm init --advertise-addr {{ ansible_host }}"
+  register: swarm_init_result
+  failed_when: "'This node is already part of a swarm' not in swarm_init_result.stderr and swarm_init_result.rc != 0"
 
-    - name: Get Swarm Join Token
-      shell: docker swarm join-token -q worker
-      register: swarm_token
-      when: "'This node is already part of a swarm' not in swarm_init_result.stderr"
+- name: Get Swarm Join Token
+  shell: "docker swarm join-token -q worker"
+  register: swarm_token
+  when: "'This node is already part of a swarm' not in swarm_init_result.stderr"
 
-    - name: Set fact for join command
-      set_fact:
-        swarm_join_cmd: "docker swarm join --token {{ swarm_token.stdout }} {{ ansible_host }}:2377"
-      when: swarm_token is defined
+- name: Set fact for join command
+  set_fact:
+    swarm_join_cmd: "docker swarm join --token {{ swarm_token.stdout }} {{ ansible_host }}:2377"
+  when: swarm_token is defined
 
 - name: Start Portainer Swarm agent
   shell: |
