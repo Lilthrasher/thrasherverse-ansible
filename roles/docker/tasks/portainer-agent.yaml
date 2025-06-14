@@ -1,4 +1,5 @@
 - name: Start Portainer agent
+  ignore_errors: true
   shell: |
     docker run -d \
      -p 9001:9001 \

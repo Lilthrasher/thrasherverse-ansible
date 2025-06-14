@@ -23,7 +23,22 @@
     - gpu
     - plex
 
-- name: Ensure Deora-1 host has Docker Swarm configured
+- name: Ensure Docker Swarm hosts have cephfs mounted
+  hosts: docker-swarm
+  become: true
+
+  roles:
+    - cephfs
+
+- name: Ensure Reverb has Portainer agent configured
+  hosts: Reverb
+  become: true
+
+  tasks:
+    - name: Configure Portainer agent
+      include_tasks: ./roles/docker/tasks/portainer-agent.yaml
+
+- name: Ensure Deora-1 has Docker Swarm configured
   hosts: deora-1
   become: true
 
@@ -31,7 +46,7 @@
     - name: Configure Portainer Swarm agent
       include_tasks: ./roles/docker/tasks/docker-swarm-init.yaml
 
-- name: Ensure Deora-2 host has Docker Swarm configured
+- name: Ensure Deora-2 has Docker Swarm configured
   hosts: deora-2
   become: true
 
