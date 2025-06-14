@@ -1,4 +1,5 @@
 - name: Docker Swarm join
+  ignore_errors: true
   shell: "{{ hostvars['deora-1']['swarm_join_cmd'] }}"
   when: hostvars['deora-1']['swarm_join_cmd'] is defined
 
