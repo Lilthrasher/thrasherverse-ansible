@@ -1,5 +1,5 @@
 - name: Initialize Docker Swarm
-  shell: "docker swarm init --advertise-addr {{ ansible_host }}"
+  shell: "docker swarm init"
   register: swarm_init_result
   failed_when: "'This node is already part of a swarm' not in swarm_init_result.stderr and swarm_init_result.rc != 0"
 
