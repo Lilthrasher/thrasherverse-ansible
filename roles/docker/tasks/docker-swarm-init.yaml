@@ -28,6 +28,7 @@
       when: manager_join_command is defined
 
 - name: Start Portainer Swarm agent
+  hosts: deora-1
   shell: |
     docker network create \
     --driver overlay \

@@ -23,18 +23,10 @@
     - gpu
     - plex
 
-- name: Ensure Reverb host has Portainer agent configured
-  hosts: reverb
-  become: true
-
-  tasks:
-    - name: Configure Portainer agent
-      include_tasks: ./roles/docker/tasks/portainer-agent.yaml
-
 - name: Ensure Deora hosts have Portainer Swarm agent configured
   hosts: deora-1
   become: true
 
   tasks:
     - name: Configure Portainer Swarm agent
-      include_tasks: ./roles/docker/tasks/portainer-swarm-agent.yaml
+      include_tasks: ./roles/docker/tasks/docker-swarm-init.yaml
