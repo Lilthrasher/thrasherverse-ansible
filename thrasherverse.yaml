@@ -29,7 +29,7 @@
 
   tasks:
     - name: Configure Portainer agent
-      include_tasks: ./docker/tasks/portainer-agent.yaml
+      include_tasks: ./roles/docker/tasks/portainer-agent.yaml
 
 - name: Ensure Deora hosts have Portainer Swarm agent configured
   hosts: docker-swarm
@@ -37,4 +37,4 @@
 
   tasks:
     - name: Configure Portainer Swarm agent
-      include_tasks: ./docker/tasks/portainer-swarm-agent.yaml
+      include_tasks: ./roles/docker/tasks/portainer-swarm-agent.yaml
