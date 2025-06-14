@@ -6,7 +6,7 @@
 - name: Get Swarm Join Token
   shell: "docker swarm join-token -q worker"
   register: swarm_token
-  when: "'This node is already part of a swarm' not in swarm_init_result.stderr"
+  #when: "'This node is already part of a swarm' not in swarm_init_result.stderr"
 
 - name: Set fact for join command
   set_fact:
@@ -14,6 +14,7 @@
   when: swarm_token is defined
 
 - name: Start Portainer Swarm agent
+  ignore_errors: true
   shell: |
     docker network create \
     --driver overlay \
