@@ -13,7 +13,7 @@
       advert_int 1
       authentication {
         auth_type PASS
-        auth_pass secretpass
+        auth_pass {{ keepalived_secret }}
       }
         virtual_ipaddress {
           10.27.1.65
