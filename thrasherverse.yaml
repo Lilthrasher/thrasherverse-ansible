@@ -1,4 +1,13 @@
-- name: Ensure VM's are configured
+- name: Wait for the hosts to become reachable
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Wait for SSH to be available
+      ansible.builtin.wait_for_connection:
+        timeout: 300  # seconds
+        sleep: 5      # check every 5 seconds
+
+- name: Ensure all hosts are configured
   hosts: all
   become: true
 
