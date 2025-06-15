@@ -6,7 +6,7 @@
 
 - name: Create directories
   file:
-    path: /mnt/plex
+    path: /mnt/plex-fast
     state: directory
     mode: 0755
     owner: "{{ username }}"
@@ -16,7 +16,7 @@
   blockinfile:
     path: /etc/fstab
     block: |
-      10.27.1.100:/mnt/sweeper/plex /mnt/plex nfs defaults  0 0
+      10.27.100.1:/mnt/sweeper/plex /mnt/plex-fast nfs defaults  0 0
     insertafter: EOF
 
 - name: Ensure NFS shares are mounted
