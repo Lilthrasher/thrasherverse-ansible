@@ -16,7 +16,7 @@
 - name: Install Intel packages
   package:
     name:
-      - linux-oem-22.04
+      - linux-oem-24.04
       - mesa-vulkan-drivers
       - libva-dev
       - intel-opencl-icd
