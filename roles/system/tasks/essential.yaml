@@ -30,3 +30,11 @@
   package:
     name: "{{ packages }}"
     state: latest
+
+- name: Configure timezone
+  shell: |
+    sudo timedatectl set-timezone {{ timezone }}
+
+- name: Configure timezone file
+  shell: |
+    echo "{{ timezone }}" | sudo tee /etc/timezone
