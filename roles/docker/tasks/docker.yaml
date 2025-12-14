@@ -1,36 +1,66 @@
-- name: Add Docker's official GPG key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
+- name: Install prerequisites for Docker repo
+  apt:
+    name:
+      - ca-certificates
+      - curl
     state: present
+    update_cache: true
+    cache_valid_time: 3600
 
-- name: Add Docker repository
-  apt_repository:
-    repo: deb https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
-    state: present
+- name: Ensure /etc/apt/keyrings exists
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Install Docker's official GPG key (ASCII, keyrings path)
+  get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: "0644"
+
+- name: Get dpkg architecture (amd64/arm64/...)
+  command: dpkg --print-architecture
+  register: dpkg_arch
+  changed_when: false
+
+- name: Add Docker apt source (Deb822 .sources format)
+  copy:
+    dest: /etc/apt/sources.list.d/docker.sources
+    mode: "0644"
+    content: |
+      Types: deb
+      URIs: https://download.docker.com/linux/ubuntu
+      Suites: {{ ansible_distribution_release }}
+      Components: stable
+      Architectures: {{ dpkg_arch.stdout | trim }}
+      Signed-By: /etc/apt/keyrings/docker.asc
 
 - name: Update packages
   apt:
     update_cache: true
-    upgrade: true
 
-- name: Install Docker packages
-  package:
+- name: Install Docker Engine + CLI + containerd + plugins
+  apt:
     name:
       - docker-ce
       - docker-ce-cli
       - containerd.io
       - docker-buildx-plugin
       - docker-compose-plugin
-    state: latest
-
-- name: Ensure Docker group is created
-  group:
-    name: docker
     state: present
 
-- name: Post installation
-  shell: |
-    sudo usermod -aG docker {{ username }}
+- name: Ensure Docker service is enabled and running
+  service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Add user to docker group
+  user:
+    name: "{{ username }}"
+    groups: docker
+    append: true
 
 - name: Create Docker directory
   file:

@@ -9,18 +9,15 @@
     state: touch
 
 - name: Update MOTD
-  copy:
-    dest: /etc/profile.d/99-neofetch.sh
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/profile.d/99-fastfetch.sh
     content: |
       clear
-      neofetch
-    mode: 0644
-    owner: "{{ username }}"
-    group: "{{ username }}"
-
-- name: chmod MOTD
-  shell: |
-    sudo chmod +x /etc/profile.d/99-neofetch.sh
+      fastfetch
+    mode: "0644"
+    owner: root
+    group: root
 
 - name: Install starship
   shell: |

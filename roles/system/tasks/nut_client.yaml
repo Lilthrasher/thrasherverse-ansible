@@ -1,14 +1,11 @@
-- name: Update packages
-  apt:
-    update_cache: yes
-    upgrade: yes
-
 - name: Install NUT packages
   package:
     name:
       - nut
       - nut-client
-    state: latest
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
 
 - name: Modify upsmon.conf
   blockinfile:

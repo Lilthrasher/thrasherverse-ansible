@@ -27,14 +27,20 @@
     lock_timeout: 300
 
 - name: Install packages
-  package:
+  apt:
     name: "{{ packages }}"
-    state: latest
+    state: present
 
 - name: Configure timezone
-  shell: |
-    sudo timedatectl set-timezone {{ timezone }}
+  become: true
+  community.general.timezone:
+    name: "{{ timezone }}"
 
-- name: Configure timezone file
-  shell: |
-    echo "{{ timezone }}" | sudo tee /etc/timezone
+- name: Ensure /etc/timezone matches
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/timezone
+    content: "{{ timezone }}\n"
+    owner: root
+    group: root
+    mode: "0644"

@@ -2,7 +2,7 @@
   package:
     name:
       - nfs-common
-    state: latest
+    state: present
 
 - name: Create directories
   file:
@@ -21,3 +21,4 @@
 
 - name: Ensure NFS shares are mounted
   command: mount -a
+  changed_when: false

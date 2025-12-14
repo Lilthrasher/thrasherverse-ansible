@@ -14,36 +14,9 @@
     - system
     - docker
 
-- name: Ensure Reverb has gpu and plex mounts configured
-  hosts: docker
+- name: Ensure Chicane has gpu and plex mounts configured
+  hosts: chicane
   become: true
   roles:
     - gpu
     - plex
-
-- name: Ensure Docker Swarm hosts have cephfs mounted
-  hosts: docker-swarm
-  become: true
-  roles:
-    - docker-swarm
-
-- name: Ensure Reverb has Portainer agent configured
-  hosts: reverb
-  become: true
-  tasks:
-    - name: Configure Portainer agent
-      include_tasks: ./roles/docker/tasks/portainer-agent.yaml
-
-- name: Ensure Deora-1 is configured
-  hosts: deora-1
-  become: true
-  tasks:
-    - name: Configure Portainer Swarm agent
-      include_tasks: ./swarm-main-init.yaml
-
-- name: Ensure Deora-2 is configured
-  hosts: deora-2
-  become: true
-  tasks:
-    - name: Configure Portainer Swarm agent
-      include_tasks: ./swarm-worker-init.yaml

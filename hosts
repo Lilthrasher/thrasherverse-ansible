@@ -1,6 +1,5 @@
 [docker]
-reverb ansible_host=10.27.1.50 ansible_user=vert ansible_connection=ssh ansible_ssh_private_key_file=~/.ssh/id_rsa
-
-[docker-swarm]
-deora-1 ansible_host=10.27.1.60 ansible_user=vert ansible_connection=ssh ansible_ssh_private_key_file=~/.ssh/id_rsa
-deora-2 ansible_host=10.27.1.70 ansible_user=vert ansible_connection=ssh ansible_ssh_private_key_file=~/.ssh/id_rsa
+nitrium ansible_host=10.27.2.5 ansible_user=vert ansible_connection=ssh ansible_ssh_private_key_file=~/.ssh/id_ed25519
+reverb ansible_host=10.27.2.10 ansible_user=vert ansible_connection=ssh ansible_ssh_private_key_file=~/.ssh/id_ed25519
+rivited ansible_host=10.27.3.10 ansible_user=vert ansible_connection=ssh ansible_ssh_private_key_file=~/.ssh/id_ed25519
+chicane ansible_host=10.27.5.20 ansible_user=vert ansible_connection=ssh ansible_ssh_private_key_file=~/.ssh/id_ed25519

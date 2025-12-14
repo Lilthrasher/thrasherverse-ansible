@@ -1,23 +1,28 @@
-- name: Update packages
-  apt:
-    update_cache: yes
-    upgrade: yes
-
 - name: Install samba
-  package:
+  apt:
     name:
       - samba
-    state: latest
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
 
 - name: Ensure Samba group is created
   group:
     name: samba
     state: present
 
-- name: Restart smbd and update firewall
-  shell: |
-    sudo service smbd restart && \
-    sudo ufw allow samba
+- name: Allow Samba through UFW
+  become: true
+  community.general.ufw:
+    rule: allow
+    name: Samba
+
+- name: Ensure smbd is enabled and running
+  become: true
+  service:
+    name: smbd
+    state: started
+    enabled: true
 
 - name: Set Samba password for {{ username }}
   expect:

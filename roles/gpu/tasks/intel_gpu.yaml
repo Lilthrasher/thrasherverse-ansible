@@ -1,26 +1,77 @@
-- name: Add Intel's official GPG key
-  apt_key:
-    url: https://repositories.intel.com/gpu/intel-graphics.key
-    state: present
-
-- name: Add Intel repository
-  apt_repository:
-    repo: deb https://repositories.intel.com/gpu/ubuntu {{ ansible_lsb.codename }} client
-    state: present
-
-- name: Update packages
+- name: Ensure apt prerequisites are present
   apt:
-    update_cache: true
-    upgrade: true
-
-- name: Install Intel packages
-  package:
     name:
-      - linux-oem-24.04
+      - ca-certificates
+      - gnupg
+      - software-properties-common
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install Intel Arc (A380) media + compute + tooling stack
+  apt:
+    name:
+      # Firmware + basic userspace
+      - linux-firmware
+      - mesa-utils
       - mesa-vulkan-drivers
-      - libva-dev
+      - vulkan-tools
+
+      # VA-API (transcoding via VAAPI/QSV in containers)
+      - libva2
+      - libva-drm2
+      - vainfo
+      - intel-media-va-driver
+
+      # oneVPL (helpful for modern Intel media pipelines)
+      - libvpl2
+      - libvpl-tools
+      - libmfx-gen1.2
+
+      # Compute (OpenCL + Level Zero)
+      - ocl-icd-libopencl1
       - intel-opencl-icd
+      - clinfo
       - libze1
-      - intel-level-zero-gpu
+      - libze-intel-gpu1
+      - intel-ocloc
+
+      # Handy diagnostics
       - intel-gpu-tools
-    state: latest
+    state: present
+    install_recommends: true
+
+- name: Ensure i915 module is loaded at boot
+  copy:
+    dest: /etc/modules-load.d/i915.conf
+    content: |
+      i915
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure i915 GuC/HuC (hard-coded to HuC only)
+  copy:
+    dest: /etc/modprobe.d/i915-guc.conf
+    content: |
+      options i915 enable_guc={{ intel_i915_enable_guc | default(2) | int }}
+    owner: root
+    group: root
+    mode: "0644"
+  register: i915_guc_conf
+
+- name: Update initramfs if i915 modprobe config changed
+  command: update-initramfs -u
+  changed_when: true
+  when: i915_guc_conf.changed
+
+- name: Ensure render group exists
+  group:
+    name: render
+    state: present
+
+- name: Add host user to video + render groups for /dev/dri access
+  user:
+    name: "{{ ansible_user_id }}"
+    groups: "video,render"
+    append: true

@@ -1,9 +1,0 @@
-- name: Install keepalived package
-  package:
-    name:
-      - keepalived
-    state: latest
-
-- name: Create keepalived config file
-  shell: |
-    touch /etc/keepalived/keepalived.conf

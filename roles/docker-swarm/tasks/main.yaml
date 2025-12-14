@@ -1,2 +1,0 @@
-- include_tasks: cephfs.yaml
-- include_tasks: keepalived.yaml
